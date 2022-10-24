@@ -32,6 +32,16 @@ public class User {
         return id;
     }
 
+    @java.lang.Override
+    public java.lang.String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", age=" + age +
+                '}';
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
