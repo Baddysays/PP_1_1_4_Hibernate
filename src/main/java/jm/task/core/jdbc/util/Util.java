@@ -1,20 +1,24 @@
 package jm.task.core.jdbc.util;
 
-public class Util {
-    private static final String DB_DRIVER = "com.mysql.cj.jdbc.Driver";
-    private static final String DB_URL = "jdbc:mysql://localhost:3306";
-    private static final String DB_USERNAME = "root";
-    private static final String DB_PASSWORD = "250695Roman";
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
-    public Connection getConnection() {
-        Connection connection = null;
+public class Util {
+    private static final String URL = "jdbc:mysql://localhost:3306/stests";
+    private static final String USERNAME = "root";
+    private static final String PASSWORD = "250695Roman";
+    static public Connection getConnect() {
+        Connection connect = null;
         try {
-        Class.forName(DB_DRIVER);
-        connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-            System.out.println("connection OK);
-    } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("connection ERROR);
+            Driver driver = new com.mysql.cj.jdbc.Driver();
+            DriverManager.registerDriver(driver);
+            connect = DriverManager.getConnection(URL,USERNAME,PASSWORD);
+        } catch (SQLException e) {
+            System.out.println("Error");
         }
-        return connection;
+        return connect;
+    }
 }
+
