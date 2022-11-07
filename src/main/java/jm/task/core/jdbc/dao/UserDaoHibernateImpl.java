@@ -21,13 +21,10 @@ public class UserDaoHibernateImpl implements UserDao {
     public void createUsersTable() {
         try (Session session = Util.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            String query = "create table if not exists users\n" +
-                    "(\n" + "    id       INT auto_increment not null,\n" +
-                    "    name     TEXT not null,\n" +
-                    "    lastName TEXT not null,\n" +
-                    "    age      INT  null,\n" +
-                    "    constraint users_pk\n" +
-                    "        primary key (id)\n" + ");";
+            String query ="CREATE TABLE IF NOT EXISTS USER " +
+                    "(ID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
+                    "name varchar(40) NOT NULL, " +
+                    "lastname varchar(40) NOT NULL, age TINYINT)";
             session.createSQLQuery(query).addEntity(User.class)
                     .executeUpdate();
             transaction.commit();
@@ -43,7 +40,7 @@ public class UserDaoHibernateImpl implements UserDao {
     public void dropUsersTable() {
         try (Session session = Util.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            String sql = "DROP TABLE IF EXISTS users;";
+            String sql = "DROP TABLE IF EXISTS user;";
             session.createSQLQuery(sql).addEntity(User.class)
                     .executeUpdate();
             transaction.commit();
@@ -71,9 +68,13 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void removeUserById(long id) {
+        String sql = "DELETE FROM Users WHERE id = ?";
+        User user;
         try (Session session = Util.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            session.remove(session.load(User.class, id));
+            user = (User)session.load(User.class, id);
+            session.delete(user);
+            session.getTransaction().commit();
             transaction.commit();
             System.out.println("User deleted");
         } catch (HibernateException e) {
@@ -88,8 +89,8 @@ public class UserDaoHibernateImpl implements UserDao {
         List<User> result = new ArrayList<>();
         try (Session session = Util.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            result = session.createQuery("from User", User.class).list();
-            session.getTransaction().commit();
+            result = session.createQuery("from User", User.class).getResultList();
+            transaction.commit();
         } catch (HibernateException e) {
             if (transaction != null) {
                 transaction.rollback();
@@ -103,7 +104,7 @@ public class UserDaoHibernateImpl implements UserDao {
         try (Session session = Util.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             session.createQuery("DELETE FROM User").executeUpdate();
-            session.getTransaction().commit();
+            transaction.commit();
         } catch (HibernateException e) {
             if (transaction != null) {
                 transaction.rollback();
